@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>War Card Game</title>
+</head>
+
+<!-- If we type "console.dir(document)" into the browser console,
+this shows you the DOM, where you can see
+all the accessible items that we can intereact with,
+such as with event listeners.
+You can also find listed all the HTML elements
+that you have specifically created in your html document -->
+
+<body>
+  <div id="wrapper">
+    <div id="start"></div>
+    <div id-"message"></div>
+    <div id="board">
+      <div id="player1" class="players">
+        <div class="score"></div>
+        <div class="hand"></div>
+      </div>
+      <div id="player2" class="players">
+        <div class="score"></div>
+        <div class="hand"></div>
+      </div>
+      <div id="action">
+        <button id="btnBattle" type="button" class="btn">Fight</button>
+      </div>
+    </div>
+
+
+    <script>
+      var suits = ["spades", "hearts", "clubs", "diams"];
+      var cardFace = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+      var deck = [];
+      var players = [[],[]];
+
+      var fightButton = document.querySelector("#btnBattle");
+      //If you then type "fightButton into the console"
+      //you can see that this element:
+      //<button id="btnBattle" type="button" class="btn">Fight</button>
+      //has been captured
+
+      //event listeners
+      fightButton.addEventListener('click', battle);
+
+
+      //functions
+      function battle() {
+        console.log('check that this works!');
+      }
+
+    </script>
+</body>
+
+</html>
