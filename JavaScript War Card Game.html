@@ -34,9 +34,12 @@ that you have specifically created in your html document -->
     <script>
       var suits = ["spades", "hearts", "clubs", "diams"];
       var cardFace = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
-      var deck = [];
+      var cards = [];
       var players = [[],[]];
-
+      //this is to check if this is the first time we are running so that the game can start
+      //so we can complete the building o f the deck
+      //it will only be reset once game is reset
+      var firstRun = true;
       var fightButton = document.querySelector("#btnBattle");
       //If you then type "fightButton into the console"
       //you can see that this element:
@@ -49,7 +52,46 @@ that you have specifically created in your html document -->
 
       //functions
       function battle() {
+        //if first run is true, game is brand new and needs more steps
+        if(firstRun){
+          //once the button is clicked the first time, reset FirstRun to false
+          //so it can only be clicked once
+          //it will only be reset once game is reset
+          firstRun = false;
+          buildCards();
+        }
         console.log('check that this works!');
+      }
+
+      //at start of game build a full deck of 52 cards:
+      function buildCards(){
+        //reset the cards deck to an empty array again
+        cards = [];
+        for(s in suits){
+          //console.log(s);  //this shows that there are properly 4 suits
+          //console.log(suits[s]);  //this lists each suit by name
+          //suits[s][0] is the first letter of each suit
+          var suitNew = suits[s][0].toUpperCase()  //makes the first letter uppercase
+          //console.log(suitNew); //this prints first letters of each suit in uppercase
+          for(n in cardFace){
+            //build empty card object
+            var card = {
+              suit:suits[s],
+              icon: suitNew,
+              //icon is just the uppercase first letter of each suit above. Redundant?
+              num:cardFace[n],
+              cardValue:parseInt(n) + 2
+              //num and cardValue are the same,
+              //but num is the string value of the card value
+              //and cardValue is the integer version of the card value
+            }
+            //loop through each suit and each card number, then push that card in the card object
+            cards.push(card);
+          }
+
+        }
+        console.log(cards);
+
       }
 
     </script>
