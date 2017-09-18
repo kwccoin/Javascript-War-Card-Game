@@ -3,6 +3,87 @@
 <html>
 <head>
 <title>War Card Game</title>
+
+<style>
+.icard{
+  position: absolute;
+  padding: 10px;
+  height: 200px;
+  width: 150px;
+  border: 1px solid black;
+  border-radius: 15px;
+  background-color: white;
+  display: inline-block;
+  top: 0;
+  left: 0;
+}
+
+.cardtop {
+  font-size: 2em;
+  height: 40px;
+  line-height: 0.7em;
+}
+.cardmid {
+  text-align: center;
+  font-size: 6.5em;
+  height: 110px;
+}
+.cardbottom {
+  font-size: 2em;
+  height: 50px;
+  line-height: 0.7em;
+  transform: rotate(-180deg); /*to flip it for bottom of card*/
+}
+
+.hearts .suit::after{ content: '\2665';}
+.spades .suit::after{ content: '\2660';}
+.clubs .suit::after{ content: '\2663';}
+.diams .suit::after{ content: '\2666';}
+
+/*this replaces line:  var bgColor = (c.icon == "H" || c.icon == "D") ? "red" : "black"; */
+.spades, .clubs{color: black;}
+.hearts, .diams{color: red;}
+
+.hand {
+  position: relative;
+}
+.players{
+  float: left;
+  width: 49%;
+  min-height: 300px;
+  border: 1px solid lightgrey;
+}
+.score{
+  font-size: 1.5em;
+}
+#message{
+  font-size: 1.2em;
+  /*make it centered?  */
+  text-align: center;
+  color: white;
+  background-color: black;
+  padding: 10px;
+}
+.btn{
+  border-radius: 5px;
+  padding: 9px 20px;
+  color: white;
+  display: inline-block;
+  text-align: center;
+  font-size: 1.5em;
+  text-shadow: 1px 1px #000;
+}
+#btnBattle{
+  background-color: red;
+}
+#btnBattle10{
+  background-color: blue;
+}
+#btnBattle50{
+  background-color: green;
+}
+</style>
+
 </head>
 
 <!-- If we type "console.dir(document)" into the browser console,
@@ -14,19 +95,21 @@ that you have specifically created in your html document -->
 
 <body>
   <div id="wrapper">
-    <div id="start"></div>
-    <div id-"message"></div>
+    <div id="message">Click "Fight" to start!</div>
     <div id="board">
       <div id="player1" class="players">
-        <div class="score"></div>
+        <div>SCORE:   <span class="score"></span></div>
         <div class="hand"></div>
       </div>
       <div id="player2" class="players">
-        <div class="score"></div>
+        <div>SCORE:   <span class="score"></span></div>
         <div class="hand"></div>
       </div>
       <div id="action">
         <button id="btnBattle" type="button" class="btn">Fight</button>
+        <button id="btnBattle10" type="button" class="btn">10 Rounds</button>
+        <button id="btnBattle50" type="button" class="btn">50 Rounds</button>
+        <!-- <button id="btnBattle" type="button" class="btn">Fight</button> -->
       </div>
     </div>
   </div>
@@ -36,22 +119,66 @@ that you have specifically created in your html document -->
       var cardFace = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
       var cards = [];
       var players = [[],[]];
+      var firstRun = true;
       //this is to check if this is the first time we are running so that the game can start
       //so we can complete the building o f the deck
       //it will only be reset once game is reset
-      var firstRun = true;
+
+
+      //to add functionality of doing many rounds automatically:
+      var timer;
+      var r = 0;  //need this here to have it a global variable
+
+
+      var gameover = false;  //stop game if over
       var fightButton = document.querySelector("#btnBattle");
+      var fightButton10 = document.querySelector("#btnBattle10");
+      var fightButton50 = document.querySelector("#btnBattle50");
       //If you then type "fightButton into the console"
       //you can see that this element:
       //<button id="btnBattle" type="button" class="btn">Fight</button>
       //has been captured
+      var p1 = document.querySelector("#player1 .hand");
+      var p2 = document.querySelector("#player2 .hand");
+      var s1 = document.querySelector("#player1 .score");
+      var s2 = document.querySelector("#player2 .score");
+      //var message = document.getElementById("message");  //made this a function instead
 
       //event listeners
       fightButton.addEventListener('click', battle);
+      //battle in "('click', battle)" is what function we are sending it to iniate
+      fightButton10.addEventListener('click', function(){
+        rounds(10);
+      });
+      fightButton50.addEventListener('click', function(){
+        rounds(50);
+      });
 
 
-      //functions
+      //FUNCTIONS
+      function rounds(a){
+        //number of rounds sent to the global variable "r"
+        r = a;
+        //initiate battle function every 0.1 seconds for "a" times
+        timer = setInterval(function(){
+          battle()
+        },250);
+      }
+
+
       function battle() {
+        //this is basically a loop for an interval:
+        //check if the timer exists
+        if(timer){
+          //if so, decrease the global var of "r"
+          r--;
+          outputMessage("Rounds left " + r);
+          //when "r" reaches 0, break out of interval
+          if(r < 1){
+            //clear the interval
+            window.clearInterval(timer);
+          }
+        }
         //if first run is true, game is brand new and needs more steps
         if(firstRun){
           //once the button is clicked the first time, reset FirstRun to false
@@ -63,8 +190,118 @@ that you have specifically created in your html document -->
           //shuffle the deck of cards
           //NOTE ERROR WAS HERE BECAUSE "cards" was not included!
           shuffleArray(cards);
+          dealCards(cards);
+          //above, do not need to pass in dealCards(cards)? WRONG!!!
+          //because this function does not return anything WRONG!!!
+          //WRONG needs "cards"
         }
-        console.log('check that this works!');
+        attack();
+        //console.log('check that this works!');
+      }
+
+      function attack() {
+        if(!gameover){
+          var card1 = players[0].shift();
+          //.shift() shows the first item in the array,
+          //and removes it from that array
+          var card2 = players[1].shift();
+          var pot = [card1, card2];
+          //update html
+          p1.innerHTML = showCard(card1,0);
+          //the 0 in (card1, 0)  is to position the cards to move them later
+          p2.innerHTML = showCard(card2,0);
+          //check winners
+          checkWinner(card1, card2, pot);
+          //update scores
+          //the score is reflective of how many cards are in each deck
+          s1.innerHTML = players[0].length;
+          s2.innerHTML = players[1].length;
+        } else{
+            //console.log("Game Over");
+            outputMessage("Game Over");
+        }
+      }
+
+      //another way to change the message on screen.
+      //involves changing all the console.log()'s to outputMessage()
+      //which is the function created below that changes the innerHTML
+      //don't think I'm a fan of this extra function
+      function outputMessage(message) {
+        //console.log(message);
+        document.getElementById("message").innerHTML = message;
+      }
+
+
+      function checkWinner(card1, card2, pot){
+        //first check if either deck <= 4 which is game over:
+        if ((players[0].length <= 4) || (players[1].length <= 4)){
+          //if not enough cards, that player loses, exit
+          gameover = true;
+          return;
+        }
+        //console.log(card1, card2);
+        if(card1.cardValue > card2.cardValue){
+          //console.log("Player 1 wins");
+          outputMessage("Player 1 wins");
+          //adding both cards from the pot to Player 1's deck
+          players[0] = players[0].concat(pot);
+        }
+        else if(card1.cardValue < card2.cardValue){
+          //console.log("Player 2 wins");
+          outputMessage("Player 2 wins");
+          //adding both cards from the pot to Player 2's deck
+          players[1] = players[1].concat(pot);
+        }else {  //if there is a Tie!
+          //console.log('Tie! BattleMode: Both players add 3 cards to pot');
+          outputMessage("Tie! BattleMode: Both players add 3 cards to pot");
+          //start next Battle
+          battlemode(pot);
+        }
+        //console.log(players);
+      }
+
+      function battlemode(pot){
+        var card1, card2;
+        var pos = (pot.length/2);
+        //check to see if a player has enough cards (3 +1) to do battle mode:
+        if ((players[0].length < 4) || (players[1].length < 4)){
+          //if not enough cards, that player loses, exit
+          return;
+        }else {
+          //both players have enough cards, add 3 cards each to the pot:
+          for (i = 0; i < 4; i++) {
+            card1 = players[0].shift();
+            pot = pot.concat(card1);
+            p1.innerHTML += showCard(card1,(pos+i));
+          }
+          for (i = 0; i < 4; i++) {
+            card2 = players[1].shift();
+            pot = pot.concat(card2);
+            p2.innerHTML += showCard(card2,(pos+i));
+          }
+          checkWinner(card1, card2, pot);
+        }
+      }
+
+      function showCard(c,p){
+        var move = p * 40;
+        //line below replaced by css above ~line 45
+        //var bgColor = (c.icon == "H" || c.icon == "D") ? "red" : "black";
+        //var bCard = c.num + ' of ' + c.suit;
+        //this way with & and ; turns the info into the asci icon for card suits:
+        //var bCard = '<div class="icard '+c.suit+' " style="color:'+bgColor+'">' + c.num + ' of &' + c.suit + ';';
+        //when color was removed b/c it was added in CSS, then added other things:
+        var bCard = '<div class="icard '+c.suit+' " style="left: '+move+'px">';
+        bCard += '<div class="cardtop suit">' + c.num + '<br></div>';
+        bCard += '<div class="cardmid suit"></div>';
+        bCard += '<div class="cardbottom suit">' + c.num + '<br></div></div>';
+        //class="icard was added later for CSS"
+
+        //to see without the proper colors:
+        //var bCard = c.num + ' of &' + c.suit + ';';
+
+        //console.log(c,move);
+        return bCard;
       }
 
       //at start of game build a full deck of 52 cards:
@@ -94,6 +331,22 @@ that you have specifically created in your html document -->
           }
         }
         //console.log(cards);  //show the deck of 52 cards
+      }
+
+      function dealCards(array){
+        for (i = 0; i < array.length; i++){
+          //deal to 1st person or 2nd person
+          if(i % 2 === 0){
+            players[0].push(array[i]);
+          }else{
+            players[1].push(array[i]);
+          }
+          /*   a more compact way to do that is:
+          var m = i % 2;
+          players[m].push(array[i]);
+          */
+        }
+        //console.log(players);
       }
 
       //NOTE THIS CAN BE USED TO SHUFFLE ANY ARRAY!!!
