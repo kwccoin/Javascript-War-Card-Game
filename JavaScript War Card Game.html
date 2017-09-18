@@ -29,7 +29,7 @@ that you have specifically created in your html document -->
         <button id="btnBattle" type="button" class="btn">Fight</button>
       </div>
     </div>
-
+  </div>
 
     <script>
       var suits = ["spades", "hearts", "clubs", "diams"];
@@ -58,7 +58,11 @@ that you have specifically created in your html document -->
           //so it can only be clicked once
           //it will only be reset once game is reset
           firstRun = false;
+          //build full deck of 52 cards
           buildCards();
+          //shuffle the deck of cards
+          //NOTE ERROR WAS HERE BECAUSE "cards" was not included!
+          shuffleArray(cards);
         }
         console.log('check that this works!');
       }
@@ -88,13 +92,31 @@ that you have specifically created in your html document -->
             //loop through each suit and each card number, then push that card in the card object
             cards.push(card);
           }
+        }
+        //console.log(cards);  //show the deck of 52 cards
+      }
+
+      //NOTE THIS CAN BE USED TO SHUFFLE ANY ARRAY!!!
+      //shuffle the deck of 52 cards
+      function shuffleArray(array){
+        for(var x = array.length -1; x > 0; x--){
+          //to get a number from 1 to 10:
+          //Math.floor(Math.random()*10);     gives 0-9
+          //Math.floor(Math.random()*10) +1;  gives 1-10
+          //NOTE:  Math.ceil()  rounds up.  Math.floor()  rounds down
+          var ii = Math.floor(Math.random()*(x+1));  //x+1 so we don't start with 0 value
+          //create temp container for array item:
+          var temp = array[x];
+          //console.log(temp);  this will create duplicates, so need to overwrite it:
+          array[x] = array[ii];
+          //console.log(array[ii]);
+          array[ii] = temp;
 
         }
-        console.log(cards);
-
+        //console.log(array);  //see that the 52 cards are shuffled
+        return array;
       }
 
     </script>
 </body>
-
 </html>
