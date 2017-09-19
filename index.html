@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>War Card Game</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<!-- If we type "console.dir(document)" into the browser console,
+this shows you the DOM, where you can see
+all the accessible items that we can intereact with,
+such as with event listeners.
+You can also find listed all the HTML elements
+that you have specifically created in your html document -->
+
+<body>
+  <div id="wrapper">
+    <div id="message">Click "Fight" to start!</div>
+    <div id="board">
+      <div id="player1" class="players">
+        <div>SCORE:   <span class="score"></span></div>
+        <div class="hand"></div>
+      </div>
+      <div id="player2" class="players">
+        <div>SCORE:   <span class="score"></span></div>
+        <div class="hand"></div>
+      </div>
+      <div id="action">
+        <button id="btnBattle" type="button" class="btn">Fight</button>
+        <button id="btnBattle10" type="button" class="btn">10 Rounds</button>
+        <button id="btnBattle50" type="button" class="btn">50 Rounds</button>
+        <!-- <button id="btnBattle" type="button" class="btn">Fight</button> -->
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"> </script>
+</body>
+</html>
